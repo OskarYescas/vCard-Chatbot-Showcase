@@ -36,10 +36,12 @@ def handle_message(text):
         return create_gallery_card(COGNIGY_GALLERY_PAYLOAD)
     elif 'replies' in text:
         return create_quick_replies_card(COGNIGY_QUICK_REPLIES_PAYLOAD)
-    elif 'buttons' in text:
+    elif 'buttons' in text and 'image' not in text: # Added condition to avoid overlap
         return create_buttons_card(COGNIGY_BUTTONS_PAYLOAD)
     elif 'list' in text:
         return create_list_card(COGNIGY_LIST_PAYLOAD)
+    elif 'image_buttons' in text: # New condition for the new card
+        return create_image_with_buttons_card(COGNIGY_GALLERY_PAYLOAD)
     elif 'image' in text:
         return create_image_card(COGNIGY_IMAGE_PAYLOAD)
     else:
