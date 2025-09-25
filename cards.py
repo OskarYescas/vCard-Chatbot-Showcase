@@ -1,4 +1,5 @@
 # cards.py
+
 def create_gallery_card(payload):
     """Translates a Cognigy Gallery into a list of separate Google Chat cards."""
     gallery_data = payload['_cognigy']['_default']['_gallery']
@@ -15,6 +16,7 @@ def create_gallery_card(payload):
         card_item = {"cardId": f"gallery_item_{item.get('title', 'card')}", "card": {"header": {"title": item.get('title', 'Gallery Item'), "subtitle": item.get('subtitle', ''), "imageUrl": item.get('imageUrl', ''), "imageType": "SQUARE"}, "sections": [{"widgets": [{"buttonList": {"buttons": buttons}}]}]}}
         cards_list.append(card_item)
     return {"cardsV2": cards_list}
+
 def create_quick_replies_card(payload):
     """Translates a Cognigy Quick Replies payload into a Google Chat card."""
     qr_data = payload['_cognigy']['_default']['_quickReplies']
@@ -26,6 +28,7 @@ def create_quick_replies_card(payload):
         card_widgets.append({"textParagraph": {"text": qr_data['text']}})
     card_widgets.append({"buttonList": {"buttons": buttons}})
     return {"cardsV2": [{"cardId": "quick_replies_card", "card": {"header": {"title": "Quick Replies Showcase"}, "sections": [{"widgets": card_widgets}]}}]}
+
 def create_buttons_card(payload):
     """Translates a Cognigy Buttons payload into a Google Chat card."""
     btn_data = payload['_cognigy']['_default']['_buttons']
@@ -42,20 +45,50 @@ def create_buttons_card(payload):
         card_widgets.append({"textParagraph": {"text": btn_data['text']}})
     card_widgets.append({"buttonList": {"buttons": buttons}})
     return {"cardsV2": [{"cardId": "buttons_card", "card": {"header": {"title": "Buttons Showcase"}, "sections": [{"widgets": card_widgets}]}}]}
+
 def create_list_card(payload):
     """Translates a Cognigy List payload into a Google Chat card."""
     list_data = payload['_cognigy']['_default']['_list']
     widgets = []
     for item in list_data['items']:
-        widgets.append({"decoratedText": {"topLabel": item.get('title', ''), "text": item.get('subtitle', ''), "startIcon": {"knownIcon": "BOOKMARK"}}})
+        widgets.append({"decoratedText": {"topLabel": item.get('title', ''), "text": item.get('subtitle', ''), "startIcon": {"knownIcon": "DESCRIPTION"}}})
     list_button = list_data.get('button')
     if list_button:
         widgets.append({"buttonList": {"buttons": [{"text": list_button['title'], "onClick": {"action": {"function": "echo", "parameters": [{"key": "text", "value": list_button['payload']}]}}}]}})
     return {"cardsV2": [{"cardId": "list_card", "card": {"header": {"title": "List Showcase"}, "sections": [{"widgets": widgets}]}}]}
+
 def create_image_card(payload):
     """Translates a Cognigy Image payload into a Google Chat card."""
     img_data = payload['_cognigy']['_default']['_image']
     return {"cardsV2": [{"cardId": "image_card", "card": {"header": {"title": "Image Showcase"}, "sections": [{"widgets": [{"image": {"imageUrl": img_data['imageUrl']}}]}]}}]}
+
+def create_image_with_buttons_card(payload):
+    """Creates a card with an image and two buttons below it."""
+    # Use the image from the first item in the gallery payload
+    image_url = payload['_cognigy']['_default']['_gallery']['items'][0]['imageUrl']
+    
+    return {
+        "cardsV2": [{
+            "cardId": "image_with_buttons_card",
+            "card": {
+                "header": {"title": "Image with 2 Buttons"},
+                "sections": [{
+                    "widgets": [
+                        {"image": {"imageUrl": image_url}},
+                        {
+                            "buttonList": {
+                                "buttons": [
+                                    {"text": "Approve", "onClick": {"action": {"function": "echo", "parameters": [{"key": "text", "value": "approve_clicked"}]}}},
+                                    {"text": "Deny", "onClick": {"action": {"function": "echo", "parameters": [{"key": "text", "value": "deny_clicked"}]}}}
+                                ]
+                            }
+                        }
+                    ]
+                }]
+            }
+        }]
+    }
+
 def create_help_card():
     """Creates a default help/welcome card."""
     return {
@@ -76,7 +109,9 @@ def create_help_card():
                         {"decoratedText": {"text": "Shows a list of interactive quick replies.", "startIcon": {"knownIcon": "STAR"}, "button": {"text": "Show Replies", "onClick": {"action": {"function": "show_replies"}}}}},
                         {"decoratedText": {"text": "Displays text with a button.", "startIcon": {"knownIcon": "STAR"}, "button": {"text": "Show Button", "onClick": {"action": {"function": "show_buttons"}}}}},
                         {"decoratedText": {"text": "Renders a vertical list of items.", "startIcon": {"knownIcon": "STAR"}, "button": {"text": "Show List", "onClick": {"action": {"function": "show_list"}}}}},
-                        {"decoratedText": {"text": "Displays a single image.", "startIcon": {"knownIcon": "STAR"}, "button": {"text": "Show Image", "onClick": {"action": {"function": "show_image"}}}}}
+                        {"decoratedText": {"text": "Displays a single image.", "startIcon": {"knownIcon": "STAR"}, "button": {"text": "Show Image", "onClick": {"action": {"function": "show_image"}}}}},
+                        # New entry for the image with buttons
+                        {"decoratedText": {"text": "Displays an image with buttons below it.", "startIcon": {"knownIcon": "STAR"}, "button": {"text": "Show Image + Buttons", "onClick": {"action": {"function": "show_image_buttons"}}}}}
                     ]
                 }]
             }
