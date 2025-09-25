@@ -102,4 +102,4 @@ This guide outlines the process for deploying the Showcase Bot using the Google 
 4. In the "Connection settings" section:
     1. "HTTP endpoint URL": Paste your new API Gateway URL.
     2. "Authentication Audience": Select "HTTP endpoint URL".
-Set your desired "Visibility" and click "SAVE".
+5. Set your desired "Visibility" and click "SAVE".
